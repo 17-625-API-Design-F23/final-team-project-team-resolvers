@@ -48,7 +48,17 @@ message PRDescriptionRequest {
 tbc
 
 ## 3 Implementation
+### 3.1 Environment
+Build in the virtual environment.
 ```sh
-source grpc/bin/activate
-deactivate
+cd Component3
+python -m venv grpc_env
+source grpc_env/bin/activate
+pip install -r requirements.txt
+# for exiting the env:
+# deactivate
+```
+In Component3, define the proto in `protos/assistant.proto` and generate gRPC code using:
+```sh
+python -m grpc_tools.protoc -I./protos --python_out=./assistant --pyi_out=./assistant --grpc_python_out=./assistant ./protos/assistant.proto
 ```
