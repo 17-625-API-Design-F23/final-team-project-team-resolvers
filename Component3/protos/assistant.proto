@@ -4,25 +4,32 @@ package assistant;
 
 // Define the AI Assistant Service
 service AIAssistant {
-    rpc GeneratePRDescription 
+    rpc GeneratePRDescription
         (PRDescriptionRequest) 
         returns (PRDescriptionResponse);
-    rpc SmartAutoComplete 
+    rpc SmartAutoComplete
         (SmartAutoCompleteRequest) 
         returns (SmartAutoCompleteResponse);
     rpc ChatGPT4Code
         (ChatGPT4CodeRequest) 
         returns (ChatGPT4CodeResponse);
-    rpc VirtualPairProgramming 
+    rpc VirtualPairProgramming
         (stream VirtualPairProgrammingRequest)
         returns (stream VirtualPairProgrammingResponse);
+}
+
+// Define a message for Change, used in many requests
+message Change {
+    string file_path = 1;
+    string change_type = 2;
+    string change_content = 3;
 }
 
 // Define a message for PR Description Request
 message PRDescriptionRequest {
     string repository_url = 1;
-    string branch_name = 2;
-    string committed_code = 3;
+    string source_branch = 2;
+    repeated Change committed_changes = 3;
 }
 
 // Define a message for PR Description Response
@@ -32,13 +39,19 @@ message PRDescriptionResponse {
 
 // Define a message for Smart Auto Complete Request
 message SmartAutoCompleteRequest {
+    message CodeContext {
+        string current_line = 1;
+        string previous_lines = 2;
+        string next_lines = 3;
+    }
     string repository_url = 1;
-    string branch_name = 2;
-    string current_file = 3;
-    string committed_code = 4;
-    string uncommitted_code = 5;
-    string recent_edits = 6;
-    string cursor_position = 7;
+    string branch_name = 2; //needed?
+    repeated Change committed_changes = 3;
+    repeated Change uncommitted_changes = 4;
+    string recent_edits = 5;
+    CodeContext code_context = 6;
+    // ta, file or file path? check the data size grpc can process
+    // best practices (ta prefers the whole file if input size allows)
 }
 
 // Define a message for Smart Auto Complete Response
@@ -47,35 +60,35 @@ message SmartAutoCompleteResponse {
 }
 
 // Define a message for Chat GPT for Code Request
+// all code in the repo
 message ChatGPT4CodeRequest {
     string repository_url = 1;
     string branch_name = 2;
-    string current_file = 3;
-    string committed_code = 4;
-    string uncommitted_code = 5; 
-    string text_description = 6;
+    repeated Change committed_changes = 3;
+    repeated Change uncommitted_changes = 4; 
+    string text_description = 5;
 }
 
 // Define a message for Chat GPT for Code Response
 message ChatGPT4CodeResponse {
-    bool needs_more_info = 1;
-    string code = 2;
+    string gpt_response = 1;
 }
 
 // Define a message for Virtual Pair Programming Request
 message VirtualPairProgrammingRequest {
     string repository_url = 1;
     string branch_name = 2;
-    string current_file = 3;
-    string committed_code = 4;
-    string uncommitted_code = 5;
-    string stack_trace = 6;
-    string text_description = 7;
+    repeated Change uncommitted_changes = 3;
+    string text_description = 4;
+    // string stack_trace = 6; // make it part of the description
+    //stack_trace in stderr, which not always exsits
 }
 
 // Define a message for Virtual Pair Programming Response
 message VirtualPairProgrammingResponse {
-    string code_pointer = 1;
-    string proposed_supplement = 2;
-    string text_description = 3;
+    message CodePointer {
+        Change delta_code = 1;
+        string text_description = 2;
+    }
+    repeated CodePointer code_pointer = 1;
 }
