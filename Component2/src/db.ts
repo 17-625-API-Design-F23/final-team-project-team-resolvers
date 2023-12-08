@@ -18,7 +18,8 @@ const users: User[] = [
 const reactions: Reaction[] = [
     { id: '1', type: 'thumbsUp', user: users[0] },
     { id: '2', type: 'smiley', user: users[1]},
-    // Add more reaction mock data
+    { id: '3', type: 'thumbsUp', user: users[2] },
+    { id: '4', type: 'thumbsUp', user: users[3] },
   ];
 
 const lines: Line[] = [
@@ -40,25 +41,36 @@ const changedFiles: ChangedFile[] = [
       filename: 'file1.js',
       changedLines: [
         lines[0],
-        // Add more changed line mock data for file1.js
       ],
     },
-    // Add more changed file mock data
+    {
+      id: '2',
+      filename: 'file2.js',
+      changedLines: [
+        lines[1],
+      ],
+    },
   ];
 
 const generalComments: GeneralComment[] = [
-    { id: '1', content: 'This is a general comment', author: users[0], reactions: [reactions['1']], reactionCount: reactions.length },
+    { 
+      id: '10001', 
+      content: 'This is a general comment', 
+      author: users[0], 
+      reactions: [reactions['1']], 
+      reactionCount: reactions.length 
+    },
     // Add more general comment mock data
   ];
 
 const inlineComments: InlineComment[] = [
     {
-      id: '1',
+      id: '20001',
       file: changedFiles[0], 
       line: changedFiles[0]['changedLines'][0], 
       content: 'This is an inline comment',
       author: users[0],
-      reactions: [reactions['3'], reactions['4']],
+      reactions: [reactions['2'], reactions['3']],
       reactionCount: reactions.length,
     },
     // Add more inline comment mock data
@@ -71,8 +83,8 @@ const pullRequests: PullRequest[] = [
       sourceCommit: '12H3J4',
       targetBranch: 'main',
       status: Status.PENDING,
-      generalComments: [generalComments['1']],
-      inlineComments: [inlineComments['1']],
+      generalComments: [generalComments['0']],
+      inlineComments: [inlineComments['0']],
     },
     {
       id: '2',

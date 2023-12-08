@@ -51,6 +51,11 @@ export const typeDefs = `
     inlineComments: [InlineComment]!
   }
 
+  type View {
+    pullRequests: PullRequest!
+    changedFiles: [ChangedFile!]!
+  }
+
   enum Status {
     PENDING,
     MERGE_CONFLICT,
@@ -59,15 +64,15 @@ export const typeDefs = `
   }
 
   type Query {
-    pullRequests(status: Status, pageLimit: Int, offset: Int): [PullRequest]!
+    pullRequests(status: Status, pageLimit: Int, offset: Int): [View]!
   }
 
   type Mutation {
     addPullRequest(description: String!, sourceCommit: String!, targetBranch: String!): PullRequest!
-    addGeneralComment(prId: ID!, content: String!, author: ID!): GeneralComment!
-    addInlineComment(prId: ID!, content: String!, author: ID!, fileId: ID!, lineNum: Int!): InlineComment!
-    addReaction(commentId: ID!, type: String!, author: ID!): Reaction!
-    removeReaction(reactionId: ID!, user: ID!): Reaction!
+    addGeneralComment(prId: ID!, content: String!, author: ID!): [GeneralComment!]!
+    addInlineComment(prId: ID!, content: String!, author: ID!, fileId: ID!, lineNum: Int!): [InlineComment!]!
+    addReaction(commentId: ID!, type: String!, author: ID!): [Reaction!]!
+    removeReaction(reactionId: ID!, user: ID!): [Reaction!]!
     mergePullRequest(prId: ID!): PullRequest!
     rejectPullRequest(prId: ID!): PullRequest!
   }

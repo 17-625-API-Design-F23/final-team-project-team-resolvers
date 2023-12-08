@@ -1,8 +1,8 @@
 enum Status {
-  PENDING,
-  MERGE_CONFLICT,
-  REJECTED,
-  MERGED,
+  PENDING = 'PENDING',
+  MERGE_CONFLICT = 'MERGE_CONFLICT',
+  REJECTED = 'REJECTED',
+  MERGED = 'MERGED',
 }
 
 export interface User {
@@ -55,4 +55,9 @@ export interface PullRequest {
   status: Status;
   generalComments: GeneralComment[];
   inlineComments: InlineComment[];
+}
+
+export interface View {
+  pullRequests: PullRequest;
+  changedFiles: ChangedFile[];
 }
