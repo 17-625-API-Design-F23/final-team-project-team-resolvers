@@ -28,7 +28,7 @@ def test_get_index_with_commit_hash():
 
 def test_get_index_negative():
     """
-    Test get index with commit hash.
+    Test get index with wrong commit hash.
     """
     response = client.get('/repo/repo_1/main/commit?commit_hash=commit_3')
     assert response.status_code == 400
@@ -39,7 +39,7 @@ def test_get_index_negative():
 
 def test_get_branches():
     """
-    Test get branches.
+    Test get all branches.
     """
     response = client.get('/repo/repo_1/branches')
     assert response.status_code == 200
@@ -50,7 +50,7 @@ def test_get_branches():
 
 def test_get_branches_negative():
     """
-    Test get branches.
+    Test get all branches with wrong repo input.
     """
     response = client.get('/repo/repo_3/branches')
     assert response.status_code == 400
@@ -61,7 +61,7 @@ def test_get_branches_negative():
 
 def test_get_tags():
     """
-    Test get tags.
+    Test get all tags.
     """
     response = client.get('/repo/repo_1/tags')
     assert response.status_code == 200
@@ -72,7 +72,7 @@ def test_get_tags():
 
 def test_get_tags_negative():
     """
-    Test get tags.
+    Test get all tags with wrong repo input.
     """
     response = client.get('/repo/repo_3/tags')
     assert response.status_code == 400
@@ -83,7 +83,7 @@ def test_get_tags_negative():
 
 def test_get_commits():
     """
-    Test get commits.
+    Test get commits on a certain branch.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commits')
     assert response.status_code == 200
@@ -95,7 +95,7 @@ def test_get_commits():
 
 def test_get_commits_repo_negative():
     """
-    Test get tags.
+    Test get tags with wrong repo input.
     """
     response = client.get('/repo/repo_3/branch/branch_1/commits')
     assert response.status_code == 400
@@ -106,7 +106,7 @@ def test_get_commits_repo_negative():
 
 def test_get_commits_branch_negative():
     """
-    Test get tags.
+    Test get tags with wrong branch input.
     """
     response = client.get('/repo/repo_1/branch/branch_3/commits')
     assert response.status_code == 400
@@ -117,7 +117,7 @@ def test_get_commits_branch_negative():
 
 def test_get_tree():
     """
-    Test get tree.
+    Test get top-level tree.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commits/commit_1')
     assert response.status_code == 200
@@ -126,7 +126,7 @@ def test_get_tree():
 
 def test_get_tree_repo_negative():
     """
-    Test get tags.
+    Test get top-level tree with wrong input.
     """
     response = client.get('/repo/repo_3/branch/branch_1/commits/commit_1')
     assert response.status_code == 400
@@ -137,7 +137,7 @@ def test_get_tree_repo_negative():
 
 def test_get_tree_branch_negative():
     """
-    Test get tags.
+    Test get top-level tree with wrong branch input.
     """
     response = client.get('/repo/repo_1/branch/branch_3/commits/commit_1')
     assert response.status_code == 400
@@ -148,7 +148,7 @@ def test_get_tree_branch_negative():
 
 def test_get_tree_commit_negative():
     """
-    Test get tags.
+    Test get top-level tree with wrong commit input.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commits/commit_3')
     assert response.status_code == 400
@@ -159,7 +159,7 @@ def test_get_tree_commit_negative():
 
 def test_get_blob():
     """
-    Test get blob.
+    Test get blob content.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commit/commit_1/blob/scr/temp.py')
     assert response.status_code == 200
@@ -168,7 +168,7 @@ def test_get_blob():
 
 def test_get_blob_repo_negative():
     """
-    Test get tags.
+    Test get blob content with wrong repo input.
     """
     response = client.get('/repo/repo_3/branch/branch_1/commit/commit_1/blob/scr/temp.py')
     assert response.status_code == 400
@@ -179,7 +179,7 @@ def test_get_blob_repo_negative():
 
 def test_get_blob_branch_negative():
     """
-    Test get tags.
+    Test get blob content with wrong branch input.
     """
     response = client.get('/repo/repo_1/branch/branch_3/commit/commit_1/blob/scr/temp.py')
     assert response.status_code == 400
@@ -190,7 +190,7 @@ def test_get_blob_branch_negative():
 
 def test_get_blob_commit_negative():
     """
-    Test get tags.
+    Test get blob content with wrong commit input.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commit/commit_3/blob/scr/temp.py')
     assert response.status_code == 400
@@ -201,7 +201,7 @@ def test_get_blob_commit_negative():
 
 def test_get_blob_path_negative():
     """
-    Test get tags.
+    Test get blob content with wrong path input.
     """
     response = client.get('/repo/repo_1/branch/branch_1/commit/commit_1/blob/scr/temp.java')
     assert response.status_code == 400
@@ -221,7 +221,7 @@ def test_get_subtree():
 
 def test_get_subtree_repo_negative():
     """
-    Test get tags.
+    Test get subtree with wrong repo input.
     """
     response = client.get('/repo/repo_3/branch/branch_2/tree/commit/commit_1/scr')
     assert response.status_code == 400
@@ -232,7 +232,7 @@ def test_get_subtree_repo_negative():
 
 def test_get_subtree_branch_negative():
     """
-    Test get tags.
+    Test get subtree with wrong branch input.
     """
     response = client.get('/repo/repo_1/branch/branch_3/tree/commit/commit_1/scr')
     assert response.status_code == 400
@@ -243,7 +243,7 @@ def test_get_subtree_branch_negative():
 
 def test_get_subtree_commit_negative():
     """
-    Test get tags.
+    Test get subtree with wrong commit input.
     """
     response = client.get('/repo/repo_1/branch/branch_2/tree/commit/commit_3/scr')
     assert response.status_code == 400
@@ -254,7 +254,7 @@ def test_get_subtree_commit_negative():
 
 def test_get_subtree_path_negative():
     """
-    Test get tags.
+    Test get subtree with wrong path input.
     """
     response = client.get('/repo/repo_1/branch/branch_2/tree/commit/commit_2/scr/temp.py')
     assert response.status_code == 400
@@ -265,7 +265,7 @@ def test_get_subtree_path_negative():
 
 def test_list_issue():
     """
-    Test list issue.
+    Test list issue function.
     """
     response = client.get('/repo/repo_1/issues?status=Open&page_size=2&page_number=1')
     assert response.status_code == 200
@@ -274,7 +274,7 @@ def test_list_issue():
 
 def test_list_issue_repo_negative():
     """
-    Test get tags.
+    Test list issure function with wrong repo input.
     """
     response = client.get('/repo/repo_3/issues?status=Open&page_size=2&page_number=1')
     assert response.status_code == 400
@@ -285,7 +285,7 @@ def test_list_issue_repo_negative():
 
 def test_list_issue_status_negative():
     """
-    Test get tags.
+    Test list issure function with wrong status input.
     """
     response = client.get('/repo/repo_1/issues?status=Close&page_size=2&page_number=1')
     assert response.status_code == 400
@@ -296,7 +296,7 @@ def test_list_issue_status_negative():
 
 def test_list_issue_page_negative():
     """
-    Test get tags.
+    Test list issure function with wrong pagination input.
     """
     response = client.get('/repo/repo_1/issues?status=Open&page_size=3&page_number=2')
     assert response.status_code == 400
@@ -317,7 +317,7 @@ def test_report_issue():
 
 def test_report_issue_repo_negative():
     """
-    Test get tags.
+    Test report issue with wrong repo input.
     """
     response = client.post('/repo/repo_3/issues?issue_description=Issue1&issue_date=2022-01-01&submitter_id=user_1&status=Open')
     assert response.status_code == 400
@@ -328,7 +328,7 @@ def test_report_issue_repo_negative():
 
 def test_report_issue_status_negative():
     """
-    Test get tags.
+    Test report issue with wrong status input.
     """
     response = client.post('/repo/repo_1/issues?issue_description=Issue1&issue_date=2022-01-01&submitter_id=user_1&status=Close')
     assert response.status_code == 400
@@ -348,7 +348,7 @@ def test_view_issue():
 
 def test_view_issue_repo_negative():
     """
-    Test get tags.
+    Test view issue with wrong repo input.
     """
     response = client.get('/repo/repo_3/issues/issue_1?page_size=2')
     assert response.status_code == 400
@@ -359,7 +359,7 @@ def test_view_issue_repo_negative():
 
 def test_view_issue_issue_negative():
     """
-    Test get tags.
+    Test view issue with wrong issue input.
     """
     response = client.get('/repo/repo_1/issues/issue_3?page_size=2')
     assert response.status_code == 400
@@ -379,7 +379,7 @@ def test_view_comments():
 
 def test_view_comments_repo_negative():
     """
-    Test get tags.
+    Test view comments with wrong repo input.
     """
     response = client.get('/repo/repo_3/issues/issue_1/comments?page_size=2&page_number=1')
     assert response.status_code == 400
@@ -390,7 +390,7 @@ def test_view_comments_repo_negative():
 
 def test_view_comments_issue_negative():
     """
-    Test get tags.
+    Test view comments with wrong issue input.
     """
     response = client.get('/repo/repo_1/issues/issue_3/comments?page_size=2&page_number=1')
     assert response.status_code == 400
@@ -413,7 +413,7 @@ def test_submit_comment():
 
 def test_submit_comment_repo_negative():
     """
-    Test get tags.
+    Test submit comment with wrong repo input.
     """
     response = client.post('/repo/repo_3/issues/issue_1/comments?comment_date=2023-01-01&submitter_id=user1&comment_content=Wrong format.')
     assert response.status_code == 400
@@ -424,7 +424,7 @@ def test_submit_comment_repo_negative():
 
 def test_submit_comment_issue_negative():
     """
-    Test get tags.
+    Test submit comment with wrong issue input.
     """
     response = client.post('/repo/repo_1/issues/issue_3/comments?comment_date=2023-01-01&submitter_id=user1&comment_content=Wrong format.')
     assert response.status_code == 400
