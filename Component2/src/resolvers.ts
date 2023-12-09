@@ -1,5 +1,5 @@
 import {users, reactions, lines, changedFiles, generalComments, inlineComments, pullRequests} from './db.js';
-import { View } from './types.js';
+import { AddGeneralCommentInput, AddInlineCommentInput, AddReactionInput, MergePullRequestInput, PullRequestInput, RejectPullRequestInput, RemoveReactionInput, View } from './types.js';
 
 enum Status {
   PENDING = 'PENDING',
@@ -17,9 +17,11 @@ export const resolvers = {
         prs = pullRequests.filter(pr => pr.status === args.status);
       }
       if (prs) {
+        // offset too large
         if (args.offset*args.pageLimit > prs.length) {
           throw new Error('Offset out of bounds.');
         }
+        // handle unfilled last page
         else if (args.offset*args.pageLimit + args.pageLimit > prs.length) {
           prOutput = pullRequests.slice(args.offset*args.pageLimit, prs.length);
         }
@@ -43,18 +45,20 @@ export const resolvers = {
     }
   },
   Mutation: {
-    addPullRequest: (parent: any, args: {description: String, sourceCommit: String, targetBranch: String}) => {
-      if (args.sourceCommit === "" || args.targetBranch === "") {
+    addPullRequest: (parent: any, args: {input: PullRequestInput}) => {
+      // check if source commit and target branch are empty
+      if (args.input.sourceCommit === "" || args.input.targetBranch === "") {
         throw new Error('Source commit or target branch cannot be empty.');
       }
-      if (pullRequests.find(pr => pr.sourceCommit === args.sourceCommit)) {
+      // check if source commit already had a pull request
+      if (pullRequests.find(pr => pr.sourceCommit === args.input.sourceCommit)) {
         throw new Error('Pull request with this source commit already exists.');
       }
       const pr = {
         id: String(pullRequests.length + 1),
-        description: args.description,
-        sourceCommit: args.sourceCommit,
-        targetBranch: args.targetBranch,
+        description: args.input.description,
+        sourceCommit: args.input.sourceCommit,
+        targetBranch: args.input.targetBranch,
         status: Status.PENDING,
         generalComments: [],
         inlineComments: [],
@@ -63,17 +67,18 @@ export const resolvers = {
       return pr;
     },
 
-    addGeneralComment: (parent: any, args: {prId: String, content: String, author: String}) => {
-      const pr = pullRequests.find(pr => pr.id === args.prId);
+    addGeneralComment: (parent: any, args: {input: AddGeneralCommentInput}) => {
+      const pr = pullRequests.find(pr => pr.id === args.input.prId);
       if (pr) {
-        if (!users.find(user => user.id === args.author)) {
+        // check if user exists
+        if (!users.find(user => user.id === args.input.author)) {
           throw new Error('User not found.');
         }
         else {
           const comment = {
             id: String(10000 + generalComments.length + 1),
-            content: args.content,
-            author: users.find(user => user.id === args.author)!,
+            content: args.input.content,
+            author: users.find(user => user.id === args.input.author)!,
             reactions: [],
             reactionCount: 0,
           };
@@ -87,25 +92,26 @@ export const resolvers = {
       }
     },
 
-    addInlineComment: (parent: any, args: {prId: String, content: String, author: String, fileId: String, lineNum: Number}) => {
-      const pr = pullRequests.find(pr => pr.id === args.prId);
+    addInlineComment: (parent: any, args: {input: AddInlineCommentInput}) => {
+      const pr = pullRequests.find(pr => pr.id === args.input.prId);
       if (pr) {
-        if (!users.find(user => user.id === args.author)) {
+        // check if user, file, and line exist
+        if (!users.find(user => user.id === args.input.author)) {
           throw new Error('User not found.');
         }
-        else if (!changedFiles.find(file => file.id === args.fileId)) {
+        else if (!changedFiles.find(file => file.id === args.input.fileId)) {
           throw new Error('File not found.');
         } 
-        else if (!lines.find(line => line.lineNum === args.lineNum)) {
+        else if (!lines.find(line => line.lineNum === args.input.lineNum)) {
           throw new Error('Line not found.');
         }
         else {
           const comment = {
             id: String(20000 + inlineComments.length + 1),
-            file: changedFiles.find(file => file.id === args.fileId)!,
-            line: lines.find(line => line.lineNum === args.lineNum)!,
-            content: args.content,
-            author: users.find(user => user.id === args.author)!,
+            file: changedFiles.find(file => file.id === args.input.fileId)!,
+            line: lines.find(line => line.lineNum === args.input.lineNum)!,
+            content: args.input.content,
+            author: users.find(user => user.id === args.input.author)!,
             reactions: [],
             reactionCount: 0,
           };
@@ -119,22 +125,27 @@ export const resolvers = {
       }
     },
 
-    addReaction: (parent: any, args: {commentId: String, type: String, author: String}) => {
+    addReaction: (parent: any, args: {input: AddReactionInput}) => {
 
-      const genCom = generalComments.find(comment => comment.id === args.commentId)
-      const inlCom = inlineComments.find(comment => comment.id === args.commentId)
-      const user = users.find(user => user.id === args.author)
+      const genCom = generalComments.find(comment => comment.id === args.input.commentId)
+      const inlCom = inlineComments.find(comment => comment.id === args.input.commentId)
+      const user = users.find(user => user.id === args.input.author)
+
+      // check if user exists
       if (!user) {
         throw new Error('User not found.');
       }
 
       const reaction = {
         id: String(reactions.length + 1),
-        type: args.type,
+        type: args.input.type,
         user: user,
       };
+
+      // add to general comments or inline comments
       if (genCom) {
-        if (genCom.reactions.find(reaction => reaction.user.id === args.author)) {
+        // check if user has already reacted to this comment
+        if (genCom.reactions.find(reaction => reaction.user.id === args.input.author)) {
           throw new Error('User has already reacted to this comment.');
         }
         else {
@@ -145,7 +156,8 @@ export const resolvers = {
         }
       }
       else if (inlCom) {
-        if (inlCom.reactions.find(reaction => reaction.user.id === args.author)) {
+        // check if user has already reacted to this comment
+        if (inlCom.reactions.find(reaction => reaction.user.id === args.input.author)) {
           throw new Error('User has already reacted to this comment.');
         }
         else {
@@ -161,24 +173,26 @@ export const resolvers = {
         
     },
 
-    removeReaction: (parent: any, args: {reactionId: String, user: String}) => {
-      const reaction = reactions.find(reaction => reaction.id === args.reactionId);
+    removeReaction: (parent: any, args: {input: RemoveReactionInput}) => {
+      const reaction = reactions.find(reaction => reaction.id === args.input.reactionId);
+      // check if reaction exists
       if (!reaction) {
         throw new Error('Reaction not found.');
       }
-      else if (reaction.user.id !== args.user) {
+      // check if user is the creator of this reaction
+      else if (reaction.user.id !== args.input.user) {
         throw new Error('User does not own this reaction.');
       }
       else {
         reactions.splice(reactions.indexOf(reaction), 1);
         // remove from generalComments or inlineComments
-        if (generalComments.find(comment => comment.reactions.find(reaction => reaction.id === args.reactionId))) {
-          const comment = generalComments.find(comment => comment.reactions.find(reaction => reaction.id === args.reactionId))!;
+        if (generalComments.find(comment => comment.reactions.find(reaction => reaction.id === args.input.reactionId))) {
+          const comment = generalComments.find(comment => comment.reactions.find(reaction => reaction.id === args.input.reactionId))!;
           comment.reactions.splice(comment.reactions.indexOf(reaction), 1);
           comment.reactionCount = comment.reactions.length;
         }
         else {
-          const comment = inlineComments.find(comment => comment.reactions.find(reaction => reaction.id === args.reactionId))!;
+          const comment = inlineComments.find(comment => comment.reactions.find(reaction => reaction.id === args.input.reactionId))!;
           comment.reactions.splice(comment.reactions.indexOf(reaction), 1);
           comment.reactionCount = comment.reactions.length;
         }
@@ -186,19 +200,20 @@ export const resolvers = {
       }
     },
 
-    mergePullRequest: (parent: any, args: {prId: String}) => {
-      const pr = pullRequests.find(pr => pr.id === args.prId);
+    mergePullRequest: (parent: any, args: {input: MergePullRequestInput}) => {
+      const pr = pullRequests.find(pr => pr.id === args.input.prId);
       if (pr) {
+        // check if pr is already merged or rejected
         if (pr.status === Status.MERGED) {
           throw new Error('Pull request already merged.');
         }
-        //for simplicity, assume pr with sourceCommit starting with 0 has merge conflict
+        else if (pr.status === Status.REJECTED) {
+          throw new Error('Pull request already rejected.');
+        }
+        //for simplicity, assume pr with sourceCommit field starting with 0 has merge conflict
         else if (pr.sourceCommit.charAt(0) === '0') {
           pr.status = Status.MERGE_CONFLICT;
           throw new Error('Merge conflict detected. Merge failed.');
-        }
-        else if (pr.status === Status.REJECTED) {
-          throw new Error('Pull request already rejected.');
         }
         else {
           pr.status = Status.MERGED;
@@ -210,9 +225,10 @@ export const resolvers = {
       }
     },
 
-    rejectPullRequest: (parent: any, args: {prId: String}) => {
-      const pr = pullRequests.find(pr => pr.id === args.prId);
+    rejectPullRequest: (parent: any, args: {input: RejectPullRequestInput}) => {
+      const pr = pullRequests.find(pr => pr.id === args.input.prId);
       if (pr) {
+        // check if pr is already merged or rejected
         if (pr.status === Status.REJECTED) {
           throw new Error('Pull request already rejected.');
         }
