@@ -61,3 +61,44 @@ export interface View {
   pullRequests: PullRequest;
   changedFiles: ChangedFile[];
 }
+
+// input types
+
+export interface PullRequestInput {
+  description: String;
+  sourceCommit: String;
+  targetBranch: String;
+}
+
+export interface AddGeneralCommentInput {
+  prId: String;
+  content: String;
+  author: String;
+}
+
+export interface AddInlineCommentInput {
+  prId: String;
+  content: String;
+  author: String;
+  fileId: String;
+  lineNum: Number;
+}
+
+export interface AddReactionInput {
+  commentId: String;
+  type: String;
+  author: String;
+}
+
+export interface RemoveReactionInput {
+  reactionId: String;
+  user: String;
+}
+
+export interface MergePullRequestInput {
+  prId: String;
+}
+
+export interface RejectPullRequestInput {
+  prId: String;
+}

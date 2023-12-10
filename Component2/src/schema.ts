@@ -68,13 +68,52 @@ export const typeDefs = `
   }
 
   type Mutation {
-    addPullRequest(description: String!, sourceCommit: String!, targetBranch: String!): PullRequest!
-    addGeneralComment(prId: ID!, content: String!, author: ID!): [GeneralComment!]!
-    addInlineComment(prId: ID!, content: String!, author: ID!, fileId: ID!, lineNum: Int!): [InlineComment!]!
-    addReaction(commentId: ID!, type: String!, author: ID!): [Reaction!]!
-    removeReaction(reactionId: ID!, user: ID!): [Reaction!]!
-    mergePullRequest(prId: ID!): PullRequest!
-    rejectPullRequest(prId: ID!): PullRequest!
+    addPullRequest(input: addPullRequestInput!): PullRequest!
+    addGeneralComment(input: addGeneralCommentInput!): [GeneralComment!]!
+    addInlineComment(input: addInlineCommentInput!): [InlineComment!]!
+    addReaction(input: addReactionInput!): [Reaction!]!
+    removeReaction(input: removeReactionInput!): [Reaction!]!
+    mergePullRequest(input: mergePullRequestInput!): PullRequest!
+    rejectPullRequest(input: rejectPullRequestInput!): PullRequest!
+  }
+
+  input addPullRequestInput {
+    description: String!
+    sourceCommit: String!
+    targetBranch: String!
+  }
+
+  input addGeneralCommentInput {
+    prId: ID!
+    content: String!
+    author: ID!
+  }
+
+  input addInlineCommentInput {
+    prId: ID!
+    content: String!
+    author: ID!
+    fileId: ID!
+    lineNum: Int!
+  }
+
+  input addReactionInput {
+    commentId: ID!
+    type: String!
+    author: ID!
+  }
+
+  input removeReactionInput {
+    reactionId: ID!
+    user: ID!
+  }
+
+  input mergePullRequestInput {
+    prId: ID!
+  }
+
+  input rejectPullRequestInput {
+    prId: ID!
   }
 `
 ;

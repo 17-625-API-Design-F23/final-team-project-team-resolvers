@@ -7,14 +7,15 @@ enum Status {
   MERGED = 'MERGED',
 }
 
+// dummy user data
 const users: User[] = [
     { id: '1', username: 'user1', account: 'account1' },
     { id: '2', username: 'user2', account: 'account2' },
     { id: '3', username: 'user3', account: 'account3' },
     { id: '4', username: 'user4', account: 'account4' },
-    // Add more user mock data
   ];
 
+// reaction data
 const reactions: Reaction[] = [
     { id: '1', type: 'thumbsUp', user: users[0] },
     { id: '2', type: 'smiley', user: users[1]},
@@ -22,6 +23,7 @@ const reactions: Reaction[] = [
     { id: '4', type: 'thumbsUp', user: users[3] },
   ];
 
+// line data
 const lines: Line[] = [
     {
       id: '1',
@@ -35,6 +37,7 @@ const lines: Line[] = [
     },
   ];
 
+// changed file data
 const changedFiles: ChangedFile[] = [
     {
       id: '1',
@@ -52,6 +55,7 @@ const changedFiles: ChangedFile[] = [
     },
   ];
 
+// general comment data, id starting with "1"
 const generalComments: GeneralComment[] = [
     { 
       id: '10001', 
@@ -60,9 +64,9 @@ const generalComments: GeneralComment[] = [
       reactions: [reactions['1']], 
       reactionCount: reactions.length 
     },
-    // Add more general comment mock data
   ];
 
+// inline comment data, id starting with "2"
 const inlineComments: InlineComment[] = [
     {
       id: '20001',
@@ -73,9 +77,9 @@ const inlineComments: InlineComment[] = [
       reactions: [reactions['2'], reactions['3']],
       reactionCount: reactions.length,
     },
-    // Add more inline comment mock data
   ];
 
+// pull request data
 const pullRequests: PullRequest[] = [
     {
       id: '1',
