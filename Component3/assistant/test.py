@@ -1,3 +1,5 @@
+"""Implement unit tests for the AI Assistant service."""
+
 import unittest
 import assistant_pb2
 from client import *
@@ -96,10 +98,5 @@ class TestAIAssistantService(unittest.TestCase):
             self.assertIn(response.code_pointer[0], self.sample_data.code_pointers_list)
     
 if __name__ == '__main__':
+    # run all test cases
     unittest.main()
-    # run the first test case
-    
-    """suite = unittest.TestSuite()
-    suite.addTest(TestAIAssistantService('test_virtual_pair_programming'))
-    runner = unittest.TextTestRunner()
-    runner.run(suite)"""
